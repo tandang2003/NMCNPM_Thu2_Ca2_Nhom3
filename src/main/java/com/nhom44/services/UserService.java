@@ -42,7 +42,7 @@ public class UserService {
         user.setEmail(email);
         user.setPassword(StringUtil.hashPassword(password));
         user.setFullName(name);
-        user.setBirthday(new java.sql.Date(birthday.getTime()));
+        user.setBirthday(new Date(birthday.getTime()));
         user.setPhone(phone);
         user.setProvince(province);
         user.setGender(isMale != null ? 1 : 0);
@@ -53,7 +53,7 @@ public class UserService {
         line = conn.withExtension(UserDAO.class, handle -> handle.insertUser(user.getFullName(),
                 user.getEmail(), user.getPassword(),
                 user.getRole(), user.getPhone(), Integer.parseInt(idProvince),
-                user.getGender(), (java.sql.Date) user.getBirthday(), user.getStatus()));
+                user.getGender(), (Date) user.getBirthday(), user.getStatus()));
         if (line == 1) {
             user.setPassword(null);
             return user;
@@ -82,7 +82,7 @@ public User update(User user){
             user.setEmail(email);
             user.setPassword(StringUtil.hashPassword(password));
             user.setFullName(name);
-            user.setBirthday(new java.sql.Date(birthday.getTime()));
+            user.setBirthday(new Date(birthday.getTime()));
             user.setPhone(phone);
             user.setGender(isMale != null ? 1 : 0);
             user.setStatus(Integer.parseInt(status));

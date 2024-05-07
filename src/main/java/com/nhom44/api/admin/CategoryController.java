@@ -6,9 +6,6 @@ import com.nhom44.bean.ResponseModel;
 import com.nhom44.services.CategoryService;
 import com.nhom44.validator.TitleOrNameSingleValidator;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.converters.DateTimeConverter;
-import org.apache.commons.beanutils.converters.SqlDateConverter;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 
 import javax.servlet.ServletException;
@@ -19,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Date;
 import java.util.List;
 
 @WebServlet(urlPatterns = "/api/admin/category")

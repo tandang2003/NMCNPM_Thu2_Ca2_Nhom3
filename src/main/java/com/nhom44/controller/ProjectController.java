@@ -1,13 +1,7 @@
 package com.nhom44.controller;
 
 import com.nhom44.bean.Category;
-import com.nhom44.bean.Project;
-import com.nhom44.bean.Province;
-import com.nhom44.bean.Service;
 import com.nhom44.services.CategoryService;
-import com.nhom44.services.ProjectService;
-import com.nhom44.services.ProvinceService;
-import com.nhom44.services.ServiceOfProjectService;
 import com.nhom44.util.LoadSession;
 import com.nhom44.util.PriceObjectHelper;
 import com.nhom44.util.SearcherProjectUtil;
@@ -27,7 +21,6 @@ public class ProjectController extends HttpServlet {
             int id = Integer.parseInt(categoryId);
             Category category = CategoryService.getInstance().getById(id);
             req.setAttribute("category", category);
-
         }
         LoadSession.loadSession(req);
 

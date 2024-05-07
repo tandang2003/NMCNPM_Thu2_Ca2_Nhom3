@@ -79,6 +79,7 @@ public class ProjectService {
     }
 
     public Project updateProject(Project project, boolean isComplete) {
+//        project.setPreValue(getById(project.getId()));
         if (isComplete) {
             conn.withExtension(ProjectDAO.class, dao -> dao.deleteInExcuting(project.getId()));
             conn.withExtension(ProjectDAO.class, dao -> dao.updateProject(project));
@@ -87,7 +88,8 @@ public class ProjectService {
             addExcuting(project);
             conn.withExtension(ProjectDAO.class, dao -> dao.updateProject(project));
         }
-        return getProjectByObject(project);
+//        project.setAfterValue(getById(project.getId()));
+        return project;
     }
 
     public int addProjectForUser(int projectId, int userId) {
@@ -120,23 +122,22 @@ public class ProjectService {
     }
 
     public List<Project> getProjetAllActive(int offset, int categoryId, int serviceId, int provinceId, long minPrice, long maxPrice, int minAcreage, int maxAcreage, int userid) {
+        System.out.println(offset + " " + categoryId + " " + serviceId + " " + provinceId + " " + minPrice + " " + maxPrice + " " + minAcreage + " " + maxAcreage + " " + userid);
         return conn.withExtension(ProjectDAO.class, dao -> {
-            System.out.println("userid " + userid);
             List<Project> res = dao.getProjetAllActive(offset, categoryId, serviceId, provinceId, minPrice, maxPrice, minAcreage, maxAcreage, userid);
-            for (Project project : res) {
-                System.out.println(project.toString());
-            }
             for (Project p : res) {
                 if (p.getSaveBy() == userid && p.getSaveBy() != 0) p.setSave(true);
             }
 //            res.forEach(p -> {
 //                if (p.getSaveBy() == userid) p.setSave(true);
 //            });
-            for (Project project : res) {
-                System.out.println(project.toString());
-            }
             return res;
         });
+    }
+
+    public static void main(String[] args) {
+
+
     }
 
 
@@ -163,13 +164,13 @@ public class ProjectService {
 
     public boolean isSaveProject(int projectId, int id) {
         return conn.withExtension(ProjectDAO.class, dao -> {
-            System.out.println(dao.isSaveProject(projectId, id));
             return dao.isSaveProject(projectId, id);
         });
     }
 
     public List<Project> getSuggestProjects(int categoryId) {
         List<Project> list = conn.withExtension(ProjectDAO.class, dao -> dao.getSuggestProjects(categoryId));
+        System.out.println(list.size());
         Set<Integer> set = new HashSet<>();
         while (set.size() < 4 && set.size() < list.size()) {
             Random random = new Random();
@@ -178,6 +179,7 @@ public class ProjectService {
         }
         List<Project> res = new ArrayList<>();
         set.forEach(i -> res.add(list.get(i)));
+        System.out.println(res.size());
         return res;
     }
 
@@ -216,20 +218,14 @@ public class ProjectService {
             p.setUpdatedAt(DateUtil.formatStringDate(p.getUpdatedAt()));
             if (p.getEstimated_complete() != null) {
                 p.setEstimated_complete(DateUtil.formatStringDate(p.getEstimated_complete()));
-            } else {p.setSchedule("Dự án đã hoàn thành");p.setEstimated_complete(p.getUpdatedAt());}
+            } else {
+                p.setSchedule("Dự án đã hoàn thành");
+                p.setEstimated_complete(p.getUpdatedAt());
+            }
         });
         return projects;
     }
 
-    public static void main(String[] args) {
-//        List<Project> projects = getInstance().getOwnProject(24);
-//        System.out.println(projects.size());
-//        for (Project project : projects) {
-//            System.out.println(project);
-//        }
-//        System.out.println(getInstance().pageSizeHistoryProjectByUserId(24));
-        System.out.println(getInstance().isLikeByUser(29, 187));
-    }
 
     public void acceptProject(int idInt) {
         conn.withExtension(ProjectDAO.class, dao -> dao.acceptProject(idInt));

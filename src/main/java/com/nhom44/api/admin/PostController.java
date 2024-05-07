@@ -7,7 +7,6 @@ import com.nhom44.services.PostService;
 import org.apache.commons.beanutils.BeanUtils;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

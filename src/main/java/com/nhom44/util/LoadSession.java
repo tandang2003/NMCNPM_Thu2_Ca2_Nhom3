@@ -26,11 +26,11 @@ public class LoadSession {
             }
         }
         if (session.getAttribute("categories") == null) {
-            List<Category> categories = CategoryService.getInstance().getAllActive();
+            List<Category> categories = CategoryService.getInstance().getAllActiveOrderByNumOfViews();
             session.setAttribute("categories", categories);
         } else {
             List<Category> categories = (List<Category>) session.getAttribute("categories");
-            List<Category> categories1 = CategoryService.getInstance().getAllActive();
+            List<Category> categories1 = CategoryService.getInstance().getAllActiveOrderByNumOfViews();
             if (!new HashSet<>(categories1).containsAll(categories)) {
                 session.setAttribute("categories", categories1);
             }

@@ -2,8 +2,8 @@ package com.nhom44.api.admin;
 
 import com.google.gson.Gson;
 import com.nhom44.bean.ResponseModel;
-import com.nhom44.services.UserService;
 import com.nhom44.bean.User;
+import com.nhom44.services.UserService;
 import com.nhom44.util.DateUtil;
 import com.nhom44.util.StringUtil;
 import com.nhom44.validator.*;
@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -266,7 +265,7 @@ public class UserController extends HttpServlet {
                     user.setProvinceId(Integer.parseInt(province));
                 }
             singleValidator = new DateValidator();
-            java.util.Date dbirthday = null;
+            Date dbirthday = null;
 
             if (!birthday.equals(user.getBirthday().toString()))
                 if (birthday == null || birthday.trim().isEmpty()) {

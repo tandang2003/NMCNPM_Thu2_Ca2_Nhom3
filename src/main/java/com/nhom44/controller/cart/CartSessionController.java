@@ -1,9 +1,6 @@
 package com.nhom44.controller.cart;
 
-import com.nhom44.bean.*;
-import com.nhom44.services.CategoryService;
-import com.nhom44.services.ProvinceService;
-import com.nhom44.services.ServiceOfProjectService;
+import com.nhom44.bean.Cart;
 import com.nhom44.validator.EmailSingleValidator;
 import com.nhom44.validator.NumberVallidator;
 

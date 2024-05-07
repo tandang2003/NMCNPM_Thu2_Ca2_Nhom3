@@ -1,12 +1,9 @@
 package com.nhom44.controller;
 
-import com.nhom44.bean.Category;
-import com.nhom44.services.CategoryService;
 import com.nhom44.util.LoadSession;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
-import java.util.List;
 
 @WebServlet(urlPatterns = "/contact")
 public class ContactController extends HttpServlet {

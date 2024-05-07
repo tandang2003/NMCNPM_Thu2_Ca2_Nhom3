@@ -4,16 +4,12 @@ package com.nhom44.services;
 import com.nhom44.bean.Cart;
 import com.nhom44.mail.MailProperties;
 
-import java.util.Date;
-import java.util.Properties;
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.mail.*;
 import javax.mail.Message.RecipientType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.Date;
+import java.util.Properties;
 
 public class MailService {
     private static MailService instance;

@@ -35,7 +35,7 @@ public class LoadNeed implements Filter {
         this.request.setAttribute("allProvinces", allProvinces);
         List<Service> allServices = ServiceOfProjectService.getInstance().getAllActive();
         this.request.setAttribute("allServices", allServices);
-        List<Category> allCategories = CategoryService.getInstance().getAllActive();
+        List<Category> allCategories = CategoryService.getInstance().getAllActiveOrderByNumOfViews();
         this.request.setAttribute("allCategories", allCategories);
         this.filterChain.doFilter(this.request, this.response);
     }

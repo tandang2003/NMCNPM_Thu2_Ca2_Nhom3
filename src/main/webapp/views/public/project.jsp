@@ -46,9 +46,10 @@
                         <div class="form-outline">
                             <select name="category" id="categoryId" class="form-control">
                                 <option value="">Loại</option>
-                                <c:forEach items="${sessionScope.categories}" var="cat">
-                                    <option value="${cat.id}" <c:if test="${category.id==cat.id}"> selected</c:if>>${cat.name}</option>
-                                </c:forEach>
+<%--                                <c:forEach items="${sessionScope.categories}" var="cat">--%>
+<%--                                    <option value="${cat.id}" <c:if--%>
+<%--                                            test="${category.id==cat.id}"> selected</c:if>>${cat.name}</option>--%>
+<%--                                </c:forEach>--%>
                             </select>
                         </div>
                     </div>
@@ -56,9 +57,9 @@
                         <div class="form-outline">
                             <select name="service" id="serviceId" class="form-control">
                                 <option value="">Loại dịch vụ</option>
-                                <c:forEach var="service" items="${sessionScope.services}">
-                                    <option value="${service.id}">${service.name}</option>
-                                </c:forEach>
+<%--                                <c:forEach var="service" items="${sessionScope.services}">--%>
+<%--                                    <option value="${service.id}">${service.name}</option>--%>
+<%--                                </c:forEach>--%>
                             </select>
                         </div>
                     </div>
@@ -66,9 +67,9 @@
                         <div class="form-outline">
                             <select name="address" id="provinceId" class="form-control">
                                 <option value="" selected>Chọn tỉnh thành</option>
-                                <c:forEach items="${provinces}" var="province">
-                                    <option value="${province.id}">${province.name}</option>
-                                </c:forEach>
+<%--                                <c:forEach items="${provinces}" var="province">--%>
+<%--                                    <option value="${province.id}">${province.name}</option>--%>
+<%--                                </c:forEach>--%>
                             </select>
                         </div>
                     </div>
@@ -77,19 +78,19 @@
                         <div class="form-outline">
                             <select name="area" id="area" class="form-control">
                                 <option value="">Diện tích</option>
-                                <c:forEach items="${acreages}" varStatus="loop" var="area">
-                                    <option value="${loop.index+1}">${area}</option>
-                                </c:forEach>
+<%--                                <c:forEach items="${acreages}" varStatus="loop" var="area">--%>
+<%--                                    <option value="${loop.index+1}">${area}</option>--%>
+<%--                                </c:forEach>--%>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-2 mt-3 text-center">
                         <div class="form-outline">
-                            <select name="area" id="price" class="form-control">
+                            <select name="price" id="price" class="form-control">
                                 <option value="">Kinh phí</option>
-                                <c:forEach items="${prices}" varStatus="loop" var="price">
-                                    <option value="${loop.index+1}">${price.strType}</option>
-                                </c:forEach>
+<%--                                <c:forEach items="${prices}" varStatus="loop" var="price">--%>
+<%--                                    <option value="${loop.index+1}">${price.strType}</option>--%>
+<%--                                </c:forEach>--%>
                                 </option>
 
                             </select>
@@ -139,17 +140,60 @@
 <%@include file="/layout/public/script.jsp" %>
 <script src="<c:url value="/template/js/main.js"/>"></script>
 <script>
-    function effectButton(){
-        let pageItem= document.getElementsByClassName('page-item');
+    $(document).ready(function () {
+        $.ajax({
+            url: "/api/project",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                console.log('project');
+                console.log(response);
+                let data = response;
+                data = JSON.parse(data.data);
+                let tag='';
+                for (let s of data.services) {
+                    tag += '<option value="' + s.id + '">' + s.name + '</option>';
+                }
+                $('#serviceId').append(tag);
+                tag = '';
+                for (let c of data.categories) {
+                    tag += '<option value="' + c.id + '">' + c.name + '</option>';
+                }
+                $('#categoryId').append(tag);
+                tag = '';
+                for (let p of data.provinces) {
+                    tag += '<option value="' + p.id + '">' + p.name + '</option>';
+                }
+                $('#provinceId').append(tag);
+                tag = '';
+
+                for (let p of data.prices) {
+                    tag += '<option value="' + p.amount + '">' + p.strType + '</option>';
+                }
+                $('#price').append(tag);
+                tag = '';
+                for (let a of data.acreages) {
+                    tag += '<option value="' + a + '">' + a + '</option>';
+                }
+                $('#area').append(tag);
+
+            },
+        })
+    })
+</script>
+<script>
+    function effectButton() {
+        let pageItem = document.getElementsByClassName('page-item');
         for (let i = 0; i < pageItem.length; i++) {
             pageItem[i].addEventListener('click', function () {
                 for (let j = 0; j < pageItem.length; j++) {
-                    if(pageItem[j].classList.contains('active') ) pageItem[j].classList.remove('active');
+                    if (pageItem[j].classList.contains('active')) pageItem[j].classList.remove('active');
                 }
                 this.classList.add('active');
             })
         }
     }
+
     function getProject(i) {
         $.ajax({
             url: "/api/project/search",
@@ -175,6 +219,7 @@
 </script>
 <script>
     function searching() {
+        console.log("searching");
         let data = {
             "categoryId": $('#categoryId').val(),
             "provinceId": $('#provinceId').val(),
@@ -229,7 +274,6 @@
                 delete fdata.area;
             }
         }
-        console.log($.param(fdata))
         $.ajax({
             url: "/api/project/search/length",
             type: "POST",
@@ -242,20 +286,17 @@
                 return false;
             },
             error: function (response) {
-                console.log('error');
                 console.log(response);
             }
         })
     }
 
     function getProject(data, i) {
-        console.log('get project');
         if (data == null) {
             data = 'offset=' + i;
         } else data += "&offset=" + i;
-        console.log(data)
         $.ajax({
-            url: "/api/project/search",
+            url: "api/project/search",
             type: "POST",
             // dataType: "json",
             data: data,
@@ -268,7 +309,6 @@
                 return false;
             },
             error: function (response) {
-                console.log('error');
                 console.log(response);
             }
         })
@@ -319,7 +359,7 @@
                 + ' class="bg-image hover-image hover-zoom ripple shadow-1-strong rounded-5 w-100 d-block">';
             if (x.isSave) project += ' <i class="fa-solid fa-bookmark position-absolute" onclick="like(this)" style="z-index: 1000"></i>'
             else project += '<i class="fa-regular fa-bookmark position-absolute" onclick="like(this)" style="z-index: 1000"></i>';
-            project += '<a href="/post/project?id=' + x.id + '">'
+            project += '<a href="/post/project/' + x.id + '">'
                 + '<img src="' + x.avatar + '"'
                 + ' class="w-100">'
                 + ' <input type="hidden" class="project-id" value=' + x.id + '>'
@@ -332,7 +372,7 @@
                 + '<p class="text-white p-0 id-project">'
                 + '<strong>MDA:' + x.id + '</strong>'
                 + '</p>'
-                + '<p class="text-white p-4 vanBan" name="test">'+x.description+'</p>'
+                + '<p class="text-white p-4 vanBan" name="test">' + x.description + '</p>'
                 + '</div>'
                 + '</div></div></a></div></div>'
         }
@@ -377,34 +417,6 @@
     //         $(this).toggleClass('fa-regular fa-bookmark fa-solid fa-bookmark');
     //     });
     // });
-</script>
-<script>
-    function gioiHanChuVaThemDauCham(className, gioiHan) {
-        var elements = document.getElementsByClassName(className);
-
-        if (!elements || elements.length === 0) {
-            console.error("Không tìm thấy phần tử với class: " + className);
-            return;
-        }
-
-        for (var i = 0; i < elements.length; i++) {
-            var vanBan = elements[i].textContent;
-
-            if (vanBan.length > gioiHan) {
-                // Cắt đoạn văn bản và thêm dấu ba chấm
-                var vanBanGioiHan = vanBan.slice(0, gioiHan) + '...' + ' xem thêm';
-                elements[i].textContent = vanBanGioiHan;
-            }
-        }
-    }
-
-    // Sử dụng hàm
-    var className = "vanBan"; // Class của thẻ p
-    var gioiHanSoChu = 220;
-
-    setTimeout(()=>{
-        gioiHanChuVaThemDauCham(className, gioiHanSoChu);
-    },400);
 </script>
 </body>
 </html>

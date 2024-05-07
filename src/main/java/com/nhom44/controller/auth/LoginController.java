@@ -1,24 +1,19 @@
 package com.nhom44.controller.auth;
 
-import com.nhom44.bean.Province;
-import com.nhom44.services.MailService;
-import com.nhom44.services.ProvinceService;
-import com.nhom44.services.UserService;
 import com.nhom44.bean.User;
+import com.nhom44.services.MailService;
+import com.nhom44.services.UserService;
 import com.nhom44.services.VerifyService;
 import com.nhom44.util.LoadSession;
 import com.nhom44.util.StringUtil;
 import com.nhom44.validator.EmailSingleValidator;
-import org.apache.commons.beanutils.BeanUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 

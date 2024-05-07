@@ -3,14 +3,12 @@ package com.nhom44.controller.admin.slide;
 import com.nhom44.services.SliderService;
 import com.nhom44.validator.NumberVallidator;
 import com.nhom44.validator.SingleValidator;
-import com.nhom44.validator.TitleOrNameSingleValidator;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.validation.Validator;
 import java.io.IOException;
 
 @WebServlet(urlPatterns = {"/admin/slide", "/admin/slide/add", "/admin/slide/edit", "/admin/slide/delete"})
