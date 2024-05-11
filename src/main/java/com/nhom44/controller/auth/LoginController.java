@@ -23,7 +23,6 @@ public class LoginController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String action = req.getParameter("action");
-        LoadSession.loadSession(req);
         if (action != null && action.equals("logout")) {
             req.getSession().setAttribute("auth",null);
             resp.sendRedirect(req.getContextPath() + "/login");
@@ -35,8 +34,6 @@ public class LoginController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
-        System.out.println(action);
-        System.out.println(req.getParameterMap().keySet().toString());
         if (action != null && action.equals("login")) {
             String email = new EmailSingleValidator().validator(req.getParameter("email")) ? req.getParameter("email") : "";
             String password = req.getParameter("password") != null && !req.getParameter("password").isEmpty() ? req.getParameter("password") : "";

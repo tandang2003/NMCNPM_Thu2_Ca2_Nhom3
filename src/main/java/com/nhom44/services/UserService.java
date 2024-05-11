@@ -69,15 +69,7 @@ public User update(User user){
        int check= conn.withExtension(UserDAO.class,dao->dao.updateUser(user));
        return check==1?conn.withExtension(UserDAO.class,dao->dao.login(user.getEmail(), user.getPassword())):null;
 }
-    public int update(String oldEmail, String email, String password, String name, Date birthday, String phone, String province, String isMale, String status, String role) {
-        String idProvince = ProvinceService.getInstance().getSpecificId(province);
-        try {
-            if (!oldEmail.equals(email)) {
-                User u = getUserByEmail(email);
-                if (u != null) {
-                    throw new Exception("Email đã tồn tại");
-                }
-            }
+    public int update(String oldEmail, String email, String password, String name, Date birthday, String phone, int province, String isMale, String status, String role) {
             User user = new User();
             user.setEmail(email);
             user.setPassword(StringUtil.hashPassword(password));
@@ -87,13 +79,11 @@ public User update(User user){
             user.setGender(isMale != null ? 1 : 0);
             user.setStatus(Integer.parseInt(status));
             user.setRole(Integer.parseInt(role));
-            int id = Integer.parseInt(idProvince);
-            int checkUpdateProvince = updateProvinceId(id, oldEmail);
+            user.setProvinceId(province);
+            System.out.println("user "+user.toString());
             int checkUpdateOther = conn.withExtension(UserDAO.class, dao -> dao.updateUser(user, oldEmail));
-            return Math.max(checkUpdateOther, checkUpdateProvince);
-        } catch (Throwable t) {
-            return -1;
-        }
+            System.out.println("checkUpdateOther "+checkUpdateOther);
+            return checkUpdateOther;
     }
 
     public User getUserOwnerOfProject(int projectId) {
@@ -109,13 +99,12 @@ public User update(User user){
         return conn.withExtension(UserDAO.class, dao -> dao.getEmailOwner());
     }
 
-    public static void main(String[] args) {
-        System.out.println(getInstance().getEmailOwner());
-    }
 
     public User login(String email, String password) {
         return conn.withExtension(UserDAO.class, dao -> {
-            String hash=StringUtil.hashPassword(password);
+            System.out.println(email);
+            String hash=StringUtil.hashPassword(password).trim();
+            System.out.println("hash "+hash);
             return dao.login(email, hash);
         });
     }
@@ -126,6 +115,10 @@ public User update(User user){
 
     public User getUserByEmailForCustomer(String email) {
         return conn.withExtension(UserDAO.class, dao -> dao.getUserByEmailForCustomer(email));
+    }
+    public static void main(String[] args) {
+        System.out.println(StringUtil.hashPassword("e79c5ca3-"));
+        System.out.println(getInstance().login("tandanmin@gmail.com","5b240e80-"));
     }
 
     public void GoogleAdditional(User user) {

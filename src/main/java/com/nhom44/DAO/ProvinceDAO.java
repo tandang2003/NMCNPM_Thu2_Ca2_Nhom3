@@ -9,7 +9,7 @@ import java.util.List;
 
 @RegisterBeanMapper(Province.class)
 public interface ProvinceDAO {
-    @SqlQuery("SELECT id, name, fullName FROM provinces")
+    @SqlQuery("SELECT id, name FROM provinces")
     List<Province> getAll();
 
     @SqlQuery("SELECT id FROM provinces where name=:name")

@@ -87,8 +87,6 @@ body {
 
 .container .birth {
     width: 340px;
-    display: flex;
-    justify-content: space-between;
 }
 
 .form-container {

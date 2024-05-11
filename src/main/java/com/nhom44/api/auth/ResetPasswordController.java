@@ -24,6 +24,7 @@ public class ResetPasswordController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println(req.getParameterMap().keySet().toString());
         String email = req.getParameter("email");
+        System.out.println(email);
         ResponseModel responseModel;
         PrintWriter out = resp.getWriter();
         if (email == null || email.isEmpty()) {
@@ -47,8 +48,10 @@ public class ResetPasswordController extends HttpServlet {
             out.close();
             return;
         }
-        String newPw = UUID.randomUUID().toString().substring(0, 9);
-        UserService.getInstance().update(user.getEmail(), user.getEmail(), newPw, user.getFullName(), user.getBirthday(), user.getPhone(), user.getProvince(), user.getGender() + "", user.getStatus() + "", user.getRole() + "");
+        String newPw = UUID.randomUUID().toString().substring(0, 9).trim();
+        System.out.println(newPw);
+        int i=UserService.getInstance().update(user.getEmail(), user.getEmail(), newPw, user.getFullName(), user.getBirthday(), user.getPhone(), user.getProvinceId(), user.getGender() + "", user.getStatus() + "", user.getRole() + "");
+        System.out.println(i);
         MailService.getInstance().sendMailToResetPassword(user.getEmail(), newPw);
         resp.setStatus(200);
         responseModel = new ResponseModel();

@@ -21,8 +21,8 @@ public interface UserDAO {
                    @Bind("provinceId") int provinceId, @Bind("gender") int gender, @Bind("birthday") Date birthday,
                    @Bind("status") int status);
 
-    @SqlUpdate("UPDATE users SET fullname =:fullName , email =:email , password =:password, role =:role,avatar=:avatar,phone=:phone, birthday=:birthday," +
-            " gender=:gender, status=:status ,updatedAt=now() WHERE email=:oldEmail")
+    @SqlUpdate("UPDATE users SET fullname =:fullName , email =:email , password =:password, role =:role,phone=:phone, birthday=:birthday," +
+            " gender=:gender, status=:status ,updatedAt=now() WHERE email LIKE :oldEmail")
     int updateUser(@BindBean User user, @Bind("oldEmail") String oldEmail);
 
     @SqlUpdate("UPDATE users SET fullname =:fullName , email =:email , password =:password, " +
@@ -30,7 +30,7 @@ public interface UserDAO {
             "gender=:gender, status=:status ,updatedAt=now() WHERE id=:id")
     int updateUser(@BindBean User user);
 
-    @SqlUpdate("UPDATE users SET provinceId=:provinceId WHERE email=:email")
+    @SqlUpdate("UPDATE users SET provinceId=:provinceId WHERE email LIKE :email")
     int updateProvinceForUser(@Bind("provinceId") int provinceId, @Bind("email") String email);
 
     @SqlQuery("Select u.fullname, u.email,u.password,u.phone, u.gender,u.status,u.role,p.name as province " +
@@ -40,7 +40,7 @@ public interface UserDAO {
     @SqlQuery("Select COUNT(u.email) FROM users u WHERE u.email=:email")
     int NumOfSameEmailContain(@Bind("email") String email);
 
-    @SqlQuery("Select u.id FROM users u WHERE u.email=:email")
+    @SqlQuery("Select u.id FROM users u WHERE u.email LIKE :email")
     int getIdUserWithEmail(@Bind("email") String email);
 
     @SqlQuery("Select u.* FROM users u JOIN users_projects up ON u.id=up.userId WHERE up.projectId=:projectId")
@@ -53,14 +53,14 @@ public interface UserDAO {
     @SqlQuery("SELECT u.email From users_projects up Left JOIN users u ON u.id=up.userId  right join projects p ON p.id=up.projectId ")
     List<String> getEmailOwner();
 
-    @SqlQuery("SELECT * FROM users WHERE email=:email AND password=:password")
+    @SqlQuery("SELECT * FROM users WHERE email LIKE :email AND password LIKE :password ")
     User login(@Bind("email") String email, @Bind("password") String password);
 
     @SqlUpdate("UPDATE users SET status=1 WHERE id=:id")
     Boolean updateSuccessVerify(@Bind("id") int id);
 
     @SqlQuery("Select u.id, u.fullname, u.email,u.password, u.phone, u.gender,u.status,u.role, u.birthday,p.name as province " +
-            "FROM users u Left Join provinces p ON u.provinceId=p.id where u.email=:email AND u.status=1")
+            "FROM users u Left Join provinces p ON u.provinceId=p.id where u.email=:email AND    u.status=1")
     User getUserByEmailForCustomer(@Bind("email") String email);
 
     @SqlUpdate("INSERT INTO users(email,password,fullName,role,status) VALUES(:email,:password,:fullName,:role,:status)")

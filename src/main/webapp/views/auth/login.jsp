@@ -34,29 +34,9 @@
                     <p style="margin: auto; padding: 6%; top:6%; font-size: 16px">Nữ</p>
                 </label>
             </div>
-            <!--            <input type="address" placeholder="Địa chỉ">-->
             <select class="mdb-select md-form" name="address" id="province" searchable="Search here..">
                 <option value="" disabled selected>Chọn tỉnh thành</option>
-                <%--                <c:forEach items="${provinces}" var="province">--%>
-                <%--                    <option value="${province.name}">${province.name}</option>--%>
-                <%--                </c:forEach>--%>
             </select>
-
-            <select class="mdb-select md-form" name="address" id="district" searchable="Search here..">
-                <option value="" disabled selected>Quận / huyện</option>
-                <%--                <c:forEach items="${districts}" var="district">--%>
-                <%--                    <option value="${district.name}">${district.name}</option>--%>
-                <%--                </c:forEach>--%>
-            </select>
-
-            <select class="mdb-select md-form" name="address" id="ward" searchable="Search here..">
-                <option value="" disabled selected>Phường / xã</option>
-                <%--                <c:forEach items="${wards}" var="district">--%>
-                <%--                    <option value="${ward.name}">${ward.name}</option>--%>
-                <%--                </c:forEach>--%>
-            </select>
-
-
             <input type="email" name="email" id="email-signup" placeholder="Tên tài khoản / Email">
             <input type="password" name="password" id="pasword-signup" placeholder="Mật khẩu">
             <input type="password" name="verifypassword" id="verifypassword-sigup" placeholder="Xác nhận mật khẩu">
@@ -84,7 +64,7 @@
             <a class="icon-arrow" href="home"><i
                     class="fa-solid fa-arrow-left"></i></a>
         </div>
-        <form action="/login" method="post" id="sign-in">
+        <form id="sign-in">
             <input type="hidden" name="action" value="login"/>
             <h1>Đăng Nhập</h1>
             <div class="social-icons">
@@ -97,7 +77,7 @@
             <input name=password type="password" placeholder="Mật khẩu" id="password-signin">
             <a id="showForgotPassword" href="#">Quên mật khẩu?</a>
             <p id="error-message-signin" style="color: red; display: none"></p>
-            <button id="login-button" type="submit">Đăng Nhập</button>
+            <button id="login-button" type="button">Đăng Nhập</button>
         </form>
     </div>
     <div class="toggle-container">
@@ -124,50 +104,71 @@
 
 <%@include file="/layout/public/script.jsp" %>
 <script src="<c:url value="/template/js/login.js"/> "></script>
-<%--<script src="<c:url value="/template/js/admin-modal-notify.js"/>"></script>--%>
 <script>
-    if (${error!=null}) {
-        alert('${error}')
-    }
-</script>
-
-<script>
-    $('#province').on('change', function () {
-        console.log($(this).val())
-    });
-    $('#district').on('change', function () {
-        console.log($(this).val())
-    });
-    $('#ward').on('change', function () {
-        console.log($(this).val())
-    });
-</script>
-
-<script>
-    $('#request-button').click(function () {
-        let data = {
-            email: $('#email-forgot').val()
-        }
+    $(document).ready(function () {
         $.ajax({
-            url: '/api/reset-password',
-            type: 'POST',
-            data: data,
-            // contentType: 'application/json',
+            url: '/api/province',
+            type: 'GET',
+            dataType: 'json',
             success: function (result) {
                 console.log("success")
                 console.log(result);
-                // if (result == 'success') {
-                //     window.location.href = '/RealEstateWeb_war_exploded/home';
-                // } else {
-                //     $('#error-message-signin').text(result);
-                //     $('#error-message-signin').css('display', 'block');
+                let province = $('#province');
+                for (let i of result) {
+                    province.append('<option value="' + i.name + '">' + i.name + '</option>')
+                }
+            }
+        })
+    })
+    $('#login-button').on('click', function () {
+        let data = {
+            email: $('#email-signin').val(),
+            password: $('#password-signin').val()
+        }
+        $.ajax({
+            url: '/api/login',
+            type: 'POST',
+            data: data,
+            success: function (result) {
+                console.log("success")
+                console.log(result);
+                data = JSON.parse(result);
+                window.location.href = data;
+            },
+            error: function (error) {
+                console.log("error")
+                err = JSON.parse(error.responseText);
+
+                console.log(error.responseText);
+                alert(err)
+            }
+        });
+    })
+</script>
+<script>
+    $('#request-button').click(function () {
+        $.ajax({
+            url: '/api/reset-password',
+            type: 'POST',
+            data: {
+                email: $('#email-forgot').val()
+            },
+            success: function (result) {
+                console.log(result)
+                result= JSON.parse(result);
+                if (result.name === 'success') {
+                    alert(result.message)
+                } else {
+                    $('#error-message-forgot').text(result.message);
+                    $('#error-message-forgot').css('display', 'block');
+
+                }
             },
             error: function (error) {
                 console.log("error")
                 console.log(error);
-
             }
-        })
+        });
     })
 </script>
 <script>
@@ -177,7 +178,7 @@
             birthday: $('#birthday').val(),
             isMale: $('#isMale').is(':checked'),
             isFemale: $('#isFemale').is(':checked'),
-            province: $('#mdb-select').val(),
+            province: $('#province').val(),
             phone: $('#phone-sigup').val(),
             email: $('#email-signup').val(),
             password: $('#pasword-signup').val(),
@@ -234,7 +235,7 @@
                 birthday.setAttribute("placeholder", mess)
                 break;
             case 'province':
-                let province = document.getElementById('mdb-select');
+                let province = document.getElementById('province');
                 province.classList.add("border-red")
                 province.classList.add("text-red")
                 province.value = ''
@@ -298,92 +299,6 @@
 <%--        })--%>
 <%--    })--%>
 <%--</script>--%>
-<%--<script>--%>
-<%--    $(document).ready(function () {--%>
-<%--        $.ajax({--%>
-<%--            url: '/api/district',--%>
-<%--            type: 'GET',--%>
-<%--            success: function (result) {--%>
-<%--                result = JSON.parse(result)--%>
-<%--                console.log(result)--%>
-<%--                for (let i of result) {--%>
-<%--                    $('#district').append('<option value="' + i.id + '">' + i.fullName + '</option>')--%>
-<%--                }--%>
-<%--            },--%>
-<%--            error: function (error) {--%>
-<%--                console.log("error")--%>
-<%--                console.log(error);--%>
-<%--            }--%>
-<%--        })--%>
-<%--    })--%>
-<%--</script>--%>
-<script>
-    $(document).ready(function () {
-        $.ajax({
-            url: '/api/province',
-            type: 'GET',
-            success: function (result) {
-                result = JSON.parse(result)
-                console.log(result)
-                for (let i of result) {
-                    $('#province').append('<option value="' + i.id + '">' + i.fullName + '</option>')
-                }
-            },
-            error: function (error) {
-                console.log("error")
-                console.log(error);
-            }
-        })
-    })
-</script>
 
-<script>
-    //     check #province chosen data, after that can choose #district if not #
-    $(document).ready(function () {
-        $('#province').on('change', function () {
-            let provinceId = $(this).val();
-            console.log(provinceId + " bla bal")
-            $.ajax({
-                url: '/api/district/' + provinceId,
-                type: 'GET',
-                success: function (result) {
-                    result = JSON.parse(result)
-                    console.log(result)
-                    for (let i of result) {
-                        $('#district').append('<option value="' + i.id + '">' + i.fullName + '</option>')
-                    }
-                },
-                error: function (error) {
-                    console.log("error");
-                    console.log(error);
-                }
-            });
-        });
-    });
-</script>
-<script>
-    //     check #district chosen data, after that can choose #ward if not #
-    $(document).ready(function () {
-        $('#district').on('change', function () {
-            let districtId = $(this).val();
-            console.log(districtId + " bla bal")
-            $.ajax({
-                url: '/api/ward/' + districtId,
-                type: 'GET',
-                success: function (result) {
-                    result = JSON.parse(result)
-                    console.log(result)
-                    for (let i of result) {
-                        $('#ward').append('<option value="' + i.id + '">' + i.fullName + '</option>')
-                    }
-                },
-                error: function (error) {
-                    console.log("error");
-                    console.log(error);
-                }
-            });
-        });
-    });
-</script>
 </body>
 </html>

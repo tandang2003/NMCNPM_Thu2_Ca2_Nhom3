@@ -190,7 +190,7 @@
                                     </div>
                                 </form>
                                 <div class="text-center mt-4">
-                                    <button class="btn btn-red" id="save" type="button">Đặt Ngay</button>
+                                    <button class="btn btn-red" id="save" type="button">Tư vấn</button>
                                 </div>
                             </div>
                         </form>
