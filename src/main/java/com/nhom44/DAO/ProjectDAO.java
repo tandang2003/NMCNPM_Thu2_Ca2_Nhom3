@@ -14,17 +14,17 @@ public interface ProjectDAO {
     @SqlQuery("Select p.id, p.title, p.avatar, p.price, pr.name as province, c.name as category, p.isAccepted," +
             " p.status, p.updatedAt" +
             " FROM projects p LEFT JOIN categories c ON p.categoryId=c.id" +
-            " LEFT JOIN addresses pr ON p.addressId=pr.id")
+            " LEFT JOIN provinces pr ON p.provinceId=pr.id")
     List<Project> getAll();
 
-    @SqlUpdate("INSERT INTO projects(title, description, avatar, price, acreage, addressId, " +
+    @SqlUpdate("INSERT INTO projects(title, description, avatar, price, acreage, provinceI, " +
             "isAccepted, categoryId, status, postId)" +
-            " VALUES(:title, :description, :avatar, :price, :acreage, :addressId, :isAccepted, " +
+            " VALUES(:title, :description, :avatar, :price, :acreage, :provinceId, :isAccepted, " +
             ":categoryId, :status,:postId)")
     Integer add(@BindBean Project project);
 
     @SqlUpdate("UPDATE projects SET title=:title, description=:description, " +
-            " price=:price, acreage=:acreage, addressId=:addressId, " +
+            " price=:price, acreage=:acreage, provinceId=:provinceId, " +
             "isAccepted=:isAccepted, categoryId=:categoryId, status=:status , updatedAt=now() " +
             "WHERE id=:id")
     Integer updateProject(@BindBean Project project);
@@ -39,24 +39,17 @@ public interface ProjectDAO {
 
 
     @SqlQuery("Select p.id, p.title,p.description, p.avatar, p.price, p.acreage, concat(w.fullName,', ',d.fullName,',   ',pr.fullName) as province, c.name as category, p.isAccepted," +
-            " p.status, p.postId, ep.schedule, ep.estimatedComplete, p.addressId, p.categoryId, p.updatedAt" +
+            " p.status, p.postId, ep.schedule, ep.estimatedComplete, p.provinceId, p.categoryId, p.updatedAt" +
             " FROM projects p LEFT JOIN categories c ON p.categoryId=c.id" +
-            " LEFT JOIN addresses address ON p.addressId=address.id" +
-            " LEFT JOIN provinces pr ON pr.id=address.provinceId" +
-            " LEFT JOIN wards w ON w.id=address.wardId" +
-            " LEFT JOIN districts d ON d.id=address.wardId" +
+            " LEFT JOIN provinces pr ON pr.id=p.provinceId" +
             " LEFT JOIN excuting_projects ep ON p.id=ep.projectId" +
             " WHERE p.id=:id")
     Project getById(@Bind("id") int id);
 
-    @SqlQuery("Select p.id, p.title,p.description, p.avatar, p.price, p.acreage, ad.name as address, c.name as category, p.isAccepted," +
-            " p.status, p.postId, ep.schedule, ep.estimatedComplete, p.addressId, p.categoryId, p.updatedAt " +
+    @SqlQuery("Select p.id, p.title,p.description, p.avatar, p.price, p.acreage, pr.name as province, c.name as category, p.isAccepted," +
+            " p.status, p.postId, ep.schedule, ep.estimatedComplete, p.provinceId, p.categoryId, p.updatedAt " +
             " FROM projects p LEFT JOIN categories c ON p.categoryId=c.id" +
-            " JOIN (select a.id,  concat(w.fullName,', ',dt.fullName,',   ',pr.fullName) as name from addresses a " +
-            "                               join provinces pr on a.provinceId = pr.id" +
-            "                               join districts dt on a.districtId = dt.id" +
-            "                               join wards w on w.id = a.wardId" +
-            " ) ad ON p.addressId=ad.id" +
+            " JOIN provinces pr ON p.provinceId=pr.id" +
             " LEFT JOIN excuting_projects ep ON p.id=ep.projectId" +
             " WHERE p.id=:id AND p.status=1 AND p.isAccepted=1 and c.status=1")
     Project getActiveById(@Bind("id") int id);
@@ -65,11 +58,14 @@ public interface ProjectDAO {
     boolean isFinishProject(@Bind("id") int id);
 
     @SqlQuery("Select p.id, p.title,p.description, p.avatar, p.acreage ,p.price, pr.name as province, c.name as category, p.isAccepted," +
-            " p.status, p.postId, ep.schedule, ep.estimatedComplete, p.categoryId,p.addressId ,p.updatedAt" +
+            " p.status, p.postId, ep.schedule, ep.estimatedComplete, p.categoryId,p.provinceId ,p.updatedAt" +
             " FROM projects p LEFT JOIN categories c ON p.categoryId=c.id" +
-            " LEFT JOIN addresses pr ON p.addressId=pr.id" +
+            " LEFT JOIN provinces pr ON p.provinceId=pr.id" +
             " LEFT JOIN excuting_projects ep ON p.id=ep.projectId" +
-            " WHERE p.title=:title AND p.description=:description  AND p.price=:price AND p.addressId=:addressId AND p.isAccepted=:isAccepted AND p.categoryId=:categoryId AND p.status=:status")
+            " WHERE p.title=:title AND p.description=:description " +
+            " AND p.price=:price AND p.provinceId=:provinceId AND " +
+            "p.isAccepted=:isAccepted AND p.categoryId=:categoryId AND " +
+            "p.status=:status")
     Project getProjectByObject(@BindBean Project project);
 
 
@@ -87,10 +83,10 @@ public interface ProjectDAO {
             "JOIN Categories c ON c.id = p.categoryId AND c.status = 1 " +
             "JOIN Posts po On po.id =p.postId " +
             "LEFT JOIN (select * from saved_projects where userId=:userid) sl ON sl.postId=po.id  " +
-            "LEFT JOIN (SELECT address.id, address.provinceId FROM ADDRESSES address) pr ON pr.id=p.addressId " +
+            "LEFT JOIN provinces pr ON pr.id=p.provinceId " +
             "WHERE  p.status=1 AND p.isAccepted=1 " +
             "AND if(:categoryId <>0 , c.id=:categoryId, c.id=p.categoryId) " +
-            "AND if(:provinceId <>0 , pr.provinceId=:provinceId, pr.provinceId=pr.provinceId) " +
+            "AND if(:provinceId <>0 , pr.id=:provinceId, pr.id=pr.id) " +
             "AND if(:minPrice <>0 ,p.price<=:minPrice,p.price>0) " +
             "AND if(:maxPrice <> 0, p.price>=:maxPrice,p.price>0) " +
             "AND if(:minAcreage <>0 , p.acreage<:minAcreage,p.acreage>=0) " +
@@ -151,7 +147,7 @@ public interface ProjectDAO {
             "LEFT JOIN saved_projects sl ON sl.postId=po.id " +
             "WHERE  p.status=1 AND p.isAccepted=1 " +
             "AND if(:categoryId <>0 , c.id=:categoryId, c.id=p.categoryId) " +
-            "AND if(:addressId <>0 , p.addressId=:addressId, p.addressId=p.addressId) " +
+            "AND if(:provinceId <>0 , p.provinceId=:provinceId, p.provinceId=p.provinceId) " +
             "AND if(:minPrice <>0 ,p.price<=:minPrice,p.price>0) " +
             "AND if(:maxPrice <> 0, p.price>=:maxPrice,p.price>0) " +
             "AND if(:minAcreage <>0 , p.acreage<:minAcreage,p.acreage>0) " +
@@ -162,7 +158,7 @@ public interface ProjectDAO {
             "JOIN Services s ON s.id=ps.serviceId AND s.status=1 " +
             "WHERE if(:serviceId>0,s.id=:serviceId,s.id=s.id)) " +
             "order by p.id ")
-    Integer getProjetAllActiveSize(@Bind("offset") int offset, @Bind("categoryId") int categoryId, @Bind("serviceId") int serviceId, @Bind("addressId") int addressId, @Bind("minPrice") long minPrice, @Bind("maxPrice") long maxPrice, @Bind("minAcreage") int minAcreage, @Bind("maxAcreage") int maxAcreage);
+    Integer getProjetAllActiveSize(@Bind("offset") int offset, @Bind("categoryId") int categoryId, @Bind("serviceId") int serviceId, @Bind("provinceId") int provinceId, @Bind("minPrice") long minPrice, @Bind("maxPrice") long maxPrice, @Bind("minAcreage") int minAcreage, @Bind("maxAcreage") int maxAcreage);
 
     @SqlUpdate("INSERT INTO saved_projects(postId, userId) VALUES(:projectId, :userId)")
     Boolean saveProject(@Bind("projectId") int projectId, @Bind("userId") int userId);
@@ -236,7 +232,7 @@ public interface ProjectDAO {
     @SqlQuery("SELECT p.id, p.title, p.avatar,p.updatedAt,p.isAccepted,p.price,pr.name as province ,c.name as category , ep.schedule as schedule , ep.estimatedComplete as estimatedComplete " +
             "FROM Projects p " +
             "JOIN Categories c ON p.categoryId = c.id  " +
-            "JOIN addresses pr ON p.addressId=pr.id " +
+            "JOIN provinces pr ON p.provinceId=pr.id " +
             "Left JOIN excuting_projects ep ON p.id=ep.projectId " +
             "JOIN users_projects up ON up.projectId=p.id AND up.userId=:id"
     )
